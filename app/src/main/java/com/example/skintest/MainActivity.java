@@ -12,11 +12,14 @@ import android.media.ThumbnailUtils;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.skintest.ml.Mdl;
+import com.example.skintest.ml.Mdll;
 import com.example.skintest.ml.Model;
 import com.example.skintest.ml.Modell;
 import com.example.skintest.ml.Modelll;
@@ -34,7 +37,7 @@ public class MainActivity extends AppCompatActivity {
     ImageView imageView;
     TextView result;
 
-    int imageSize = 32;
+    int imageSize = 224;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -119,11 +122,14 @@ public class MainActivity extends AppCompatActivity {
 //            // TODO Handle the exception
 //        }
 
-            Modelll model = Modelll.newInstance(getApplicationContext());
+            Mdll model = Mdll.newInstance(getApplicationContext()); // model name to change here
 
             // Creates inputs for reference.
-            TensorBuffer inputFeature0 = TensorBuffer.createFixedSize(new int[]{1, 32, 32, 3}, DataType.FLOAT32);
-            ByteBuffer byteBuffer = ByteBuffer.allocateDirect(4 * imageSize * imageSize * 3);
+            TensorBuffer inputFeature0 = TensorBuffer.createFixedSize(new int[]{1, 224, 224, 3},
+                    DataType.FLOAT32); // image size to declare here according to android import
+            // model code suggestion
+            ByteBuffer byteBuffer = ByteBuffer.allocateDirect(  4 * imageSize * imageSize * 3);
+            // image size to declare according according to declared inputFeature0 size
             byteBuffer.order(ByteOrder.nativeOrder());
 
             int[] intValues = new int[imageSize * imageSize];
@@ -142,11 +148,17 @@ public class MainActivity extends AppCompatActivity {
             inputFeature0.loadBuffer(byteBuffer);
 
             // Runs model inference and gets result.
-            Modelll.Outputs outputs = model.process(inputFeature0);
+            Mdll.Outputs outputs = model.process(inputFeature0); // model name to change here
             TensorBuffer outputFeature0 = outputs.getOutputFeature0AsTensorBuffer();
 
             float[] confidences = outputFeature0.getFloatArray();
             // find the index of the class with the biggest confidence.
+
+            Log.e("confidences[0]", Float.toString(confidences[0])); // to check the
+            // size of
+            Log.e("confidences[1]", Float.toString(confidences[1])); // to check the size of
+            // confidences in console
+
             int maxPos = 0;
             float maxConfidence = 0;
             for (int i = 0; i < confidences.length; i++) {
@@ -155,7 +167,7 @@ public class MainActivity extends AppCompatActivity {
                     maxPos = i;
                 }
             }
-            String[] classes = {"Apple", "Banana", "Orange"};
+            String[] classes = {"Malignant", "Benign"};
             result.setText(classes[maxPos]);
 
             // Releases model resources if no longer used.
