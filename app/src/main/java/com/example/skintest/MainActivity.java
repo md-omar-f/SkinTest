@@ -37,6 +37,8 @@ public class MainActivity extends AppCompatActivity {
     ImageView imageView;
     TextView result;
 
+    TextView confidenceScore;
+
     int imageSize = 224;
 
     @Override
@@ -49,6 +51,8 @@ public class MainActivity extends AppCompatActivity {
 
         imageView = findViewById(R.id.imageView);
         result = findViewById(R.id.result);
+
+        confidenceScore = findViewById(R.id.confidenceScore);
 
         camera.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -169,6 +173,7 @@ public class MainActivity extends AppCompatActivity {
             }
             String[] classes = {"Malignant", "Benign"};
             result.setText(classes[maxPos]);
+            confidenceScore.setText(Float.toString(maxConfidence));
 
             // Releases model resources if no longer used.
             model.close();
