@@ -20,9 +20,11 @@ import android.widget.TextView;
 
 import com.example.skintest.ml.Mdl;
 import com.example.skintest.ml.Mdll;
+import com.example.skintest.ml.Mdlll;
 import com.example.skintest.ml.Model;
 import com.example.skintest.ml.Modell;
 import com.example.skintest.ml.Modelll;
+import com.example.skintest.ml.Modl;
 
 import org.tensorflow.lite.DataType;
 import org.tensorflow.lite.support.tensorbuffer.TensorBuffer;
@@ -126,7 +128,7 @@ public class MainActivity extends AppCompatActivity {
 //            // TODO Handle the exception
 //        }
 
-            Mdll model = Mdll.newInstance(getApplicationContext()); // model name to change here
+            Modl model = Modl.newInstance(getApplicationContext()); // model name to change here
 
             // Creates inputs for reference.
             TensorBuffer inputFeature0 = TensorBuffer.createFixedSize(new int[]{1, 224, 224, 3},
@@ -140,19 +142,20 @@ public class MainActivity extends AppCompatActivity {
             image.getPixels(intValues, 0, image.getWidth(), 0, 0, image.getWidth(), image.getHeight());
             int pixel = 0;
             //iterate over each pixel and extract R, G, and B values. Add those values individually to the byte buffer.
-            for(int i = 0; i < imageSize; i ++){
+            for(int i = 0; i < imageSize; i++){
                 for(int j = 0; j < imageSize; j++){
                     int val = intValues[pixel++]; // RGB
-                    byteBuffer.putFloat(((val >> 16) & 0xFF) * (1.f / 1));
-                    byteBuffer.putFloat(((val >> 8) & 0xFF) * (1.f / 1));
-                    byteBuffer.putFloat((val & 0xFF) * (1.f / 1));
+                    byteBuffer.putFloat(((val >> 16) & 0xFF) * (1.f / 255.f)); // I used before
+                    // getting into arif's code (1.f / 1)
+                    byteBuffer.putFloat(((val >> 8) & 0xFF) * (1.f / 255.f));
+                    byteBuffer.putFloat((val & 0xFF) * (1.f / 255.f));
                 }
             }
 
             inputFeature0.loadBuffer(byteBuffer);
 
             // Runs model inference and gets result.
-            Mdll.Outputs outputs = model.process(inputFeature0); // model name to change here
+            Modl.Outputs outputs = model.process(inputFeature0); // model name to change here
             TensorBuffer outputFeature0 = outputs.getOutputFeature0AsTensorBuffer();
 
             float[] confidences = outputFeature0.getFloatArray();
@@ -161,6 +164,7 @@ public class MainActivity extends AppCompatActivity {
             Log.e("confidences[0]", Float.toString(confidences[0])); // to check the
             // size of
             Log.e("confidences[1]", Float.toString(confidences[1])); // to check the size of
+            Log.e("confidences[2]", Float.toString(confidences[2])); // to check the size of
             // confidences in console
 
             int maxPos = 0;
@@ -171,7 +175,7 @@ public class MainActivity extends AppCompatActivity {
                     maxPos = i;
                 }
             }
-            String[] classes = {"Malignant", "Benign"};
+            String[] classes = {"Malignant", "Benign", "Healthy"};
             result.setText(classes[maxPos]);
             confidenceScore.setText(Float.toString(maxConfidence));
 

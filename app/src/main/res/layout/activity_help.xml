@@ -33,7 +33,7 @@
             android:layout_marginTop="10dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            android:text="1. Click on Test Skin button of the home page" />
+            android:text="1. Click on Test Skin button of the scan page" />
 
         <TextView
             android:id="@+id/para2"
